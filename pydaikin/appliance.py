@@ -22,6 +22,11 @@ HTTP_RESOURCES = [
     'aircon/get_year_power',
 ]
 
+AIRBASE_RESOURCES = [
+    'aircon/get_model_info',
+    'common/basic_info'
+]
+
 INFO_RESOURCES = [
     'aircon/get_sensor_info',
     'aircon/get_control_info',
@@ -117,6 +122,7 @@ class Appliance(entity.Entity):
             self.ip = id
             self.session = session
             return
+        self.airbase = True  # TODO, set this accordingly
 
         try:
             socket.inet_aton(id)
@@ -242,6 +248,9 @@ class Appliance(entity.Entity):
             query_c += '&f_rate=%s' % self.values['f_rate']
         if self.support_swing_mode:
             query_c += '&f_dir=%s' % self.values['f_dir']
+
+        if self.airbase:
+            query_c += '&lpw=&f_airside=0'
 
         query_h = ('common/set_holiday?en_hol=%s' % self.values.get('en_hol'))
 
