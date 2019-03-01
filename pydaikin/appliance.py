@@ -200,19 +200,19 @@ class Appliance(entity.Entity):
         v = self.values[key]
 
         if key == 'mode':
-            if self.values['pow'] == '0' and not self.airbase:
+            if self.values['pow'] == '0':
                 v = 'off'
             else:
                 v = daikin_to_human(key, v)
 
         elif key in TRANSLATIONS:
-            v = daikin_to_human(key, v)
+            v = daikin_to_human(key, str(v))
         elif key == 'mac':
             v = self.translate_mac(v)
         else:
             v = daikin_to_human(key, v, self._airbase)
 
-        _LOGGER.debug('Represent: %s, %s, %s', key, k, v)
+        _LOGGER.warning('Represent: %s, %s, %s', key, k, v)
         return (k, v)
 
     async def set(self, settings):
@@ -255,7 +255,7 @@ class Appliance(entity.Entity):
             if self._airbase and self.values['f_rate'] != 5:
                     self.values['f_rate'] = 1
             query_c += '&f_rate=%s' % self.values['f_rate']
-        if self.support_swing_mode:
+        if self.support_swing_mode or self.airbase:
             query_c += '&f_dir=%s' % self.values['f_dir']
 
         if self._airbase:
