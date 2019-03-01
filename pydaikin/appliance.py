@@ -98,7 +98,7 @@ TRANSLATIONS_REV = {
 
 
 def daikin_to_human(dimension, value):
-    return TRANSLATIONS.get(dimension, {}).get(value, value)
+    return TRANSLATIONS.get(dimension, {}).get(value, str(value))
 
 
 def human_to_daikin(dimension, value):
