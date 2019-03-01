@@ -63,6 +63,38 @@ VALUES_TRANSLATION = {
 
 TRANSLATIONS = {
     'mode': {
+        '2': 'dry',
+        '3': 'cool',
+        '4': 'hot',
+        '6': 'fan',
+        '0': 'auto',
+        '1': 'auto-1',
+        '7': 'auto-7',
+        '10': 'off',
+    },
+    'f_rate': {
+        'A': 'auto',
+        'B': 'silence',
+        '3': '1',
+        '4': '2',
+        '5': '3',
+        '6': '4',
+        '7': '5',
+    },
+    'f_dir': {
+        '0': 'off',
+        '1': 'vertical',
+        '2': 'horizontal',
+        '3': '3d',
+    },
+    'en_hol': {
+        '0': 'off',
+        '1': 'on',
+    },
+}
+
+TRANSLATIONS_AIRBASE = {
+    'mode': {
         '0': 'fan',
         '1': 'hot',
         '2': 'cool',
@@ -89,20 +121,26 @@ TRANSLATIONS = {
     },
 }
 
-# Reversed list of translations
-TRANSLATIONS_REV = {
-    dim: {v: k
-          for k, v in item.items()}
-    for dim, item in TRANSLATIONS.items()
-}
+
+def daikin_to_human(dimension, value, airbase=False):
+    if airbase:
+        translations = TRANSLATIONS_AIRBASE
+    else:
+        translations = TRANSLATIONS
+    return translations.get(dimension, {}).get(value, str(value))
 
 
-def daikin_to_human(dimension, value):
-    return TRANSLATIONS.get(dimension, {}).get(value, str(value))
-
-
-def human_to_daikin(dimension, value):
-    return TRANSLATIONS_REV.get(dimension, {}).get(value, value)
+def human_to_daikin(dimension, value, airbase=False):
+    if airbase:
+        translations = TRANSLATIONS_AIRBASE
+    else:
+        translations = TRANSLATIONS
+    translations_rev = {
+        dim: {v: k
+              for k, v in item.items()}
+        for dim, item in translations.items()
+    }
+    return translations_rev.get(dimension, {}).get(value, value)
 
 
 def daikin_values(dimension):
@@ -199,14 +237,8 @@ class Appliance(entity.Entity):
         # adapt the value
         v = self.values[key]
 
-        if key == 'mode':
-            if self.values['pow'] == '0':
+        if key == 'mode' and self.values['pow'] == '0':
                 v = 'off'
-            else:
-                v = daikin_to_human(key, v)
-
-        elif key in TRANSLATIONS:
-            v = daikin_to_human(key, str(v))
         elif key == 'mac':
             v = self.translate_mac(v)
         else:
@@ -235,7 +267,7 @@ class Appliance(entity.Entity):
             self.values['pow'] = '1'
 
         # Use settings for respecitve mode (dh and dt)
-        for k, v in {'stemp': 'dt', 'shum': 'dh'}.items():
+        for k, v in {'stemp': 'dt', 'shum': 'dh', 'f_rate': 'dfr'}.items():
             if k not in settings:
                 key = v + self.values['mode']
                 if key in current_val:
