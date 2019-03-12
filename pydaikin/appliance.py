@@ -205,6 +205,8 @@ class Appliance(entity.Entity):
                 return await self._get_resource(resource)
 
     async def _get_resource(self, resource):
+        if self._airbase:
+            resource = 'skyfi/%s' % resource
         async with self.session.get(
                 'http://%s/%s' % (self.ip, resource)) as resp:
             if resp.status == 200:
