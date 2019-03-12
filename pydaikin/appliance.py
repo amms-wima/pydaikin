@@ -246,7 +246,7 @@ class Appliance(entity.Entity):
         else:
             v = daikin_to_human(key, v, self._airbase)
 
-        _LOGGER.warning('Represent: %s, %s, %s', key, k, v)
+        _LOGGER.debug('Represent: %s, %s, %s', key, k, v)
         return (k, v)
 
     async def set(self, settings):
@@ -297,7 +297,7 @@ class Appliance(entity.Entity):
 
         query_h = ('common/set_holiday?en_hol=%s' % self.values.get('en_hol'))
 
-        _LOGGER.warning("Sending query_c: %s", query_c)
+        _LOGGER.debug("Sending query_c: %s", query_c)
         if self.values.get('en_hol', '') == "1":
             await self.get_resource(query_h)
         else:
