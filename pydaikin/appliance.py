@@ -289,7 +289,7 @@ class Appliance(entity.Entity):
             if self._airbase and self.values['f_rate'] != 5:
                     self.values['f_rate'] = 1
             query_c += '&f_rate=%s' % self.values['f_rate']
-        if self.support_swing_mode or self.airbase:
+        if self.support_swing_mode or self._airbase:
             query_c += '&f_dir=%s' % self.values['f_dir']
 
         if self._airbase:
