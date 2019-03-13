@@ -151,13 +151,12 @@ class Appliance(entity.Entity):
     def __init__(self, id, session=None):
 
         entity.Entity.__init__(self)
+        self._airbase = False
         self.session = session
 
         if session:
             self.ip = id
-            self.session = session
             return
-        self._airbase = False
 
         try:
             socket.inet_aton(id)
