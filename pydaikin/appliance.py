@@ -184,6 +184,7 @@ class Appliance(entity.Entity):
         await self.update_status(HTTP_RESOURCES[:1])
         if self.values == {}:
             self._airbase = True
+            INFO_RESOURCES.append('aircon/get_zone_setting')
             self.values.update({'htemp': '-', 'otemp': '-', 'shum': '--'})
             await self.update_status(AIRBASE_RESOURCES)
         else:
