@@ -322,10 +322,12 @@ class Appliance(entity.Entity):
         self.values.update(current_state)
         zone_onoff = self.represent('zone_onoff')[1]
         zone_onoff[zone_id] = status
+        self.values['zone_onoff'] = quote(';'.join(zone_onoff)).lower()
 
         query = 'aircon/set_zone_setting?zone_name={}&zone_onoff={}'.format(
             current_state['zone_name'],
-            quote(';'.join(zone_onoff)).lower())
+            self.values['zone_onoff'],
+        )
 
         _LOGGER.debug("Set zone:: %s", query)
         await self.get_resource(query)
