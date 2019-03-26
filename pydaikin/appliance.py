@@ -313,7 +313,7 @@ class Appliance(entity.Entity):
         if not self.values.get('zone_name'):
             return
         zone_onoff = self.represent('zone_onoff')[1]
-        return [(name, zone_onoff[i])
+        return [(name.strip(' +,'), zone_onoff[i])
                 for i, name in enumerate(self.represent('zone_name')[1])]
 
     async def set_zone(self, zone_id, status):
