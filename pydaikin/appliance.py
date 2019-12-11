@@ -6,6 +6,7 @@ from urllib.parse import quote, unquote
 
 from aiohttp import ClientSession, ServerDisconnectedError
 
+import pydaikin.daikin_skyfi as skyfi
 import pydaikin.discovery as discovery
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,10 +43,12 @@ class Appliance:
         return sorted(list(cls.TRANSLATIONS[dimension].values()))
 
     @staticmethod
-    async def factory(device_id, session=None):
+    async def factory(device_id, session=None, **kwargs):
         """Factory to init the corresponding Daikin class."""
-        _class = DaikinBRP069(device_id, session)
-        _class = await _class.init()
+        if 'password' in kwargs:
+            _class = skyfi.DaikinSkyFi(device_id, session, password=kwargs['password'])
+        else:
+            _class = await DaikinBRP069(device_id, session).init()
         return _class
 
     @staticmethod
