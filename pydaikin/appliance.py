@@ -2,6 +2,7 @@
 
 import logging
 import socket
+from uuid import uuid1
 
 from aiohttp import ClientSession, ServerDisconnectedError
 
@@ -125,12 +126,22 @@ def daikin_values(dimension):
 class Appliance(entity.Entity):
     """Daikin appliance class."""
 
-    def __init__(self, id, session=None):
+    def __init__(self, id, session=None, key=None, uuid=None):
         """Init the pydaikin appliance, representing one Daikin device."""
         entity.Entity.__init__(self)
         self._airbase = False
         self._fan_rate = TRANSLATIONS['f_rate']
         self.session = session
+        self._key = key
+        if key is None:
+            self._protocol = 'http'
+            self._headers = {}
+        else:
+            if uuid is None:
+                uuid = str(uuid1())
+            self._uuid = uuid.replace('-', '')
+            self._protocol = 'https'
+            self._headers = {"X-Daikin-uuid": self._uuid}
 
         if session:
             self.ip = id
@@ -158,6 +169,8 @@ class Appliance(entity.Entity):
 
     async def init(self):
         """Init status."""
+        if self._key is not None:
+            await self.get_resource(f'/common/register_terminal?key={self._key}')
         await self.update_status(HTTP_RESOURCES[:1])
         if self.values == {}:
             self._airbase = True
@@ -214,7 +227,11 @@ class Appliance(entity.Entity):
         """Make the http request."""
         if self._airbase:
             resource = 'skyfi/%s' % resource
-        async with self.session.get('http://%s/%s' % (self.ip, resource)) as resp:
+        async with self.session.get(
+            f'{self._protocol}://{self.ip}/{resource}',
+            headers=self._headers,
+            ssl=False,
+        ) as resp:
             if resp.status == 200:
                 return self.parse_response(await resp.text())
             return {}

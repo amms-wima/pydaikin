@@ -31,6 +31,8 @@ parser.add_argument(
     help='show all the values available for the device',
 )
 
+parser.add_argument('-k', '--key', help='unit\'s key (only used by BRP072Cxx devices)')
+
 settings = parser.add_argument_group('device settings', 'Modify paramaters of a device')
 
 settings.add_argument(
@@ -88,7 +90,7 @@ else:
         only_summary = True
 
     loop = asyncio.get_event_loop()
-    e = appliance.Appliance(args.device)
+    e = appliance.Appliance(args.device, key=args.key)
     loop.run_until_complete(e.init())
 
     if settings == {}:
