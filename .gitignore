@@ -1,6 +1,10 @@
 build/*
 dist/*
 pydaikin.egg-info/*
-pydaikin/__pycache__/*
+__pycache__
 .eggs/*
 .vscode/*
+.cache/
+.idea/
+*.pyc
+venv/

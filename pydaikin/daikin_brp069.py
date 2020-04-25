@@ -44,6 +44,7 @@ class DaikinBRP069(Appliance):
         'aircon/get_price',
         'common/get_holiday',
         'common/get_notify',
+        'aircon/get_day_power_ex',
         'aircon/get_week_power',
         'aircon/get_year_power',
     ]
@@ -84,6 +85,12 @@ class DaikinBRP069(Appliance):
     async def init(self):
         """Init status."""
         await self.update_status(self.HTTP_RESOURCES[1:])
+
+        if self.support_energy_consumption:
+            self.INFO_RESOURCES += [
+                'aircon/get_day_power_ex',
+                'aircon/get_week_power',
+            ]
 
     async def _update_settings(self, settings):
         """Update settings to set on Daikin device."""

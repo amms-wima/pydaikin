@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import time
 
 from pydaikin.daikin_brp069 import DaikinBRP069 as appliance
 import pydaikin.discovery as discovery
@@ -62,7 +63,20 @@ settings.add_argument(
     '-w', '--away', choices=appliance.daikin_values('en_hol'), help='set away mode'
 )
 
+settings.add_argument(
+    '-s', '--sensor', action='store_true', help='tail sensors\'s value'
+)
+
+settings.add_argument(
+    '-v', '--verbose', action='store_true', help='enable logging debug'
+)
+
 args = parser.parse_args()
+
+if args.verbose:
+    import logging
+
+    logging.basicConfig(level=logging.DEBUG)
 
 if args.list:
     list_all_devices()
@@ -103,3 +117,13 @@ else:
 
     else:
         loop.run_until_complete(daikin.set(settings))
+
+    if args.sensor:
+        print('\nPress CTRL+C to stop tailing sensor data...\n')
+        try:
+            while True:
+                loop.run_until_complete(daikin.update_status())
+                daikin.show_sensors()
+                time.sleep(30)
+        except KeyboardInterrupt:
+            pass
