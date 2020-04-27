@@ -97,9 +97,9 @@ class DaikinSkyFi(Appliance):
         resource = "{}pass={}".format(resource, self._password)
         return await super()._run_get_resource(resource)
 
-    def _represent(self, key):
+    def represent(self, key):
         """Return translated value from key."""
-        k, val = super()._represent(key)
+        k, val = super().represent(key)
         if key in [f'zone{i}' for i in range(1, 9)]:
             val = unquote(self[key])
         if key == 'zone':
@@ -137,11 +137,11 @@ class DaikinSkyFi(Appliance):
         """Return list of zones."""
         if 'nz' not in self.values:
             return False
-        zone_onoff = self._represent('zone')
+        zone_onoff = self.represent('zone')
         return [
             (name.strip(' +,'), zone_onoff)
             for i, name in enumerate(
-                [self._represent(f'zone{i}') for i in range(1, int(self['nz']) + 1)]
+                [self.represent(f'zone{i}') for i in range(1, int(self['nz']) + 1)]
             )
         ]
 

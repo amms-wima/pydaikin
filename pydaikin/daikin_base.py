@@ -217,7 +217,7 @@ class Appliance:  # pylint: disable=too-many-public-methods
 
         for key in keys:
             if key in self.values:
-                (k, val) = self._represent(key)
+                (k, val) = self.represent(key)
                 print("%18s: %s" % (k, val))
 
     def show_sensors(self):
@@ -243,7 +243,7 @@ class Appliance:  # pylint: disable=too-many-public-methods
             data.append(f'heat_power={self.last_hour_heat_power_consumption:.01f}kW')
         print('  '.join(data))
 
-    def _represent(self, key):
+    def represent(self, key):
         """Return translated value from key."""
         k = self.VALUES_TRANSLATION.get(key, key)
 
@@ -274,6 +274,11 @@ class Appliance:  # pylint: disable=too-many-public-methods
             return [int(x) for x in self.values.get(dimension).split('/')]
         except ValueError:
             return None
+
+    @property
+    def device_ip(self):
+        """Return device's IP address."""
+        return self._device_ip
 
     @property
     def support_away_mode(self):
