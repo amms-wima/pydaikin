@@ -99,7 +99,7 @@ class DaikinSkyFi(Appliance):
 
     def represent(self, key):
         """Return translated value from key."""
-        k, val = super().represent(key)
+        k, val = super().represent(self.SKYFI_TO_DAIKIN.get(key, key))
         if key in [f'zone{i}' for i in range(1, 9)]:
             val = unquote(self[key])
         if key == 'zone':
