@@ -34,3 +34,8 @@ class DaikinBRP072C(DaikinBRP069):
             if resp.status == 200:
                 return self.parse_response(await resp.text())
         return {}
+
+    @property
+    def mac(self):
+        """Return ip as mac not is available on SkyFi units."""
+        return self._device_ip
