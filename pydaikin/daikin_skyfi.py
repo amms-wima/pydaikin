@@ -88,7 +88,8 @@ class DaikinSkyFi(Appliance):
     @staticmethod
     def parse_response(response_body):
         """Parse response from Daikin and map it to general Daikin format."""
-        response = dict([e.split('=') for e in response_body.split(',')])
+        _LOGGER.debug("Parsing %s", response_body)
+        response = dict([e.split('=') for e in response_body.split('&')])
         return response
 
     async def _run_get_resource(self, resource):
