@@ -414,8 +414,13 @@ class Appliance:  # pylint: disable=too-many-public-methods
 
     @property
     def fan_rate(self):
-        """Return list of supported fan modes."""
+        """Return list of supported fan rates."""
         return list(map(str.title, self.TRANSLATIONS.get('f_rate', {}).values()))
+
+    @property
+    def swing_modes(self):
+        """Return list of supported swing modes."""
+        return list(map(str.title, self.TRANSLATIONS.get('f_dir', {}).values()))
 
     async def set(self, settings):
         """Set settings on Daikin device."""
