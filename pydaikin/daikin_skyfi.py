@@ -3,6 +3,8 @@
 import logging
 from urllib.parse import unquote
 
+from aiohttp.client_exceptions import ClientResponseError
+
 from .daikin_base import Appliance
 
 _LOGGER = logging.getLogger(__name__)
@@ -90,7 +92,13 @@ class DaikinSkyFi(Appliance):
     async def _run_get_resource(self, resource):
         """Make the http request."""
         resource = "{}pass={}".format(resource, self._password)
-        return await super()._run_get_resource(resource)
+        for i in range(4):
+            try:
+                return await super()._run_get_resource(resource)
+            except ClientResponseError:
+                _LOGGER.debug("ClientResponeError #%s", i)
+                if i >= 3:
+                    raise
 
     def represent(self, key):
         """Return translated value from key."""
@@ -122,7 +130,9 @@ class DaikinSkyFi(Appliance):
         else:
             self.values['pow'] = '1'
 
-        query_c = 'set.cgi?p={pow}&t={stemp}&f={f_rate}&m={mode}&'.format(**self.values)
+        query_c = 'set.cgi?p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
+            **self.values
+        )
 
         _LOGGER.debug("Sending query_c: %s", query_c)
         await self._get_resource(query_c)
@@ -132,12 +142,9 @@ class DaikinSkyFi(Appliance):
         """Return list of zones."""
         if 'nz' not in self.values:
             return False
-        zone_onoff = self.represent('zone')
         return [
-            (name.strip(' +,'), zone_onoff[i])
-            for i, name in enumerate(
-                [self.represent(f'zone{i}')[1] for i in range(1, int(self['nz']) + 1)]
-            )
+            (self.represent(f'zone{i+1}')[1].strip(' +,'), onoff)
+            for i, onoff in enumerate(self.represent('zone'))
         ]
 
     async def set_zone(self, zone_id, status):
