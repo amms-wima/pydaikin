@@ -3,7 +3,7 @@
 import logging
 from urllib.parse import unquote
 
-from aiohttp.client_exceptions import ClientResponseError
+from aiohttp.client_exceptions import ClientOSError, ClientResponseError
 
 from .daikin_base import Appliance
 
@@ -95,8 +95,8 @@ class DaikinSkyFi(Appliance):
         for i in range(4):
             try:
                 return await super()._run_get_resource(resource)
-            except ClientResponseError:
-                _LOGGER.debug("ClientResponeError #%s", i)
+            except (ClientOSError, ClientResponseError) as err:
+                _LOGGER.debug("%s #%s", repr(err), i)
                 if i >= 3:
                     raise
 
