@@ -25,6 +25,8 @@ class DaikinSkyFi(Appliance):
         'acmode': 'mode',
     }
 
+    DAIKIN_TO_SKYFI = {k: val for k, val in SKYFI_TO_DAIKIN.items()}
+
     TRANSLATIONS = {
         'mode': {
             '0': 'Off',
@@ -39,13 +41,6 @@ class DaikinSkyFi(Appliance):
         'f_rate': {'1': 'low', '2': 'mid', '3': 'high'},
         'f_mode': {'1': 'manual', '3': 'auto'},
     }
-
-    @classmethod
-    def daikin_to_skyfi(cls, dimension):
-        """Return converted values from Daikin to SkyFi."""
-        return {val: key for key, val in cls.SKYFI_TO_DAIKIN.items()}.get(
-            dimension, dimension
-        )
 
     def __init__(self, device_id, session=None, password=None):
         """Init the pydaikin appliance, representing one Daikin SkyFi device."""
@@ -99,7 +94,7 @@ class DaikinSkyFi(Appliance):
 
     def represent(self, key):
         """Return translated value from key."""
-        k, val = super().represent(self.SKYFI_TO_DAIKIN.get(key, key))
+        k, val = super().represent(self.DAIKIN_TO_SKYFI.get(key, key))
         if key in [f'zone{i}' for i in range(1, 9)]:
             val = unquote(self[key])
         if key == 'zone':
@@ -116,7 +111,7 @@ class DaikinSkyFi(Appliance):
         self.values.update(current_val)
         self.values.update(
             {
-                self.daikin_to_skyfi(k): self.human_to_daikin(k, v)
+                self.DAIKIN_TO_SKYFI[k]: self.human_to_daikin(k, v)
                 for k, v in settings.items()
             }
         )
