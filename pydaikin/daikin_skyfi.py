@@ -25,7 +25,7 @@ class DaikinSkyFi(Appliance):
         'acmode': 'mode',
     }
 
-    DAIKIN_TO_SKYFI = {k: val for k, val in SKYFI_TO_DAIKIN.items()}
+    DAIKIN_TO_SKYFI = {val: k for k, val in SKYFI_TO_DAIKIN.items()}
 
     TRANSLATIONS = {
         'mode': {
@@ -134,9 +134,9 @@ class DaikinSkyFi(Appliance):
             return False
         zone_onoff = self.represent('zone')
         return [
-            (name.strip(' +,'), zone_onoff)
+            (name.strip(' +,'), zone_onoff[i])
             for i, name in enumerate(
-                [self.represent(f'zone{i}') for i in range(1, int(self['nz']) + 1)]
+                [self.represent(f'zone{i}')[1] for i in range(1, int(self['nz']) + 1)]
             )
         ]
 

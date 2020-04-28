@@ -265,7 +265,7 @@ class Appliance:  # pylint: disable=too-many-public-methods
         """Parse temperature."""
         try:
             return float(self.values.get(dimension))
-        except ValueError:
+        except (TypeError, ValueError):
             return False
 
     def _energy_consumption(self, dimension):
