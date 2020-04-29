@@ -84,7 +84,7 @@ class DaikinSkyFi(Appliance):
         response = dict([e.split('=') for e in response_body.split('&')])
         response.update(
             {
-                response[DaikinSkyFi.SKYFI_TO_DAIKIN.get(key, key)]: val
+                DaikinSkyFi.SKYFI_TO_DAIKIN.get(key, key): val
                 for key, val in response.items()
             }
         )
