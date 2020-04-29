@@ -38,9 +38,9 @@ class DaikinSkyFi(Appliance):
             '4': 'dry',
             '8': 'cool',
             '9': 'auto-9',
-            '16': 'dry',
+            '16': 'fan',
         },
-        'f_rate': {'1': 'low', '2': 'mid', '3': 'high'},
+        'f_rate': {'0': 'auto', '1': 'low', '2': 'medium', '3': 'high'},
         'f_mode': {'1': 'manual', '3': 'auto'},
     }
 
