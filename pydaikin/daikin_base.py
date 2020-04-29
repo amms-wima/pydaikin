@@ -281,6 +281,11 @@ class Appliance:  # pylint: disable=too-many-public-methods
         return self._device_ip
 
     @property
+    def mac(self):
+        """Return device's MAC address."""
+        return self.values.get('mac', self._device_ip)
+
+    @property
     def support_away_mode(self):
         """Return True if the device support away_mode."""
         return 'en_hol' in self.values

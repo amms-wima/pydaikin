@@ -77,11 +77,6 @@ class DaikinSkyFi(Appliance):
         """Return True if the device support setting swing_mode."""
         return False
 
-    @property
-    def mac(self):
-        """Return ip as mac not is available on SkyFi units."""
-        return self._device_ip
-
     @staticmethod
     def parse_response(response_body):
         """Parse response from Daikin and map it to general Daikin format."""
