@@ -87,6 +87,12 @@ class DaikinSkyFi(Appliance):
         """Parse response from Daikin and map it to general Daikin format."""
         _LOGGER.debug("Parsing %s", response_body)
         response = dict([e.split('=') for e in response_body.split('&')])
+        response.update(
+            {
+                response[DaikinSkyFi.SKYFI_TO_DAIKIN.get(key, key)]: val
+                for key, val in response.items()
+            }
+        )
         return response
 
     async def _run_get_resource(self, resource):
@@ -102,7 +108,7 @@ class DaikinSkyFi(Appliance):
 
     def represent(self, key):
         """Return translated value from key."""
-        k, val = super().represent(self.DAIKIN_TO_SKYFI.get(key, key))
+        k, val = super().represent(self.SKYFI_TO_DAIKIN.get(key, key))
         if key in [f'zone{i}' for i in range(1, 9)]:
             val = unquote(self[key])
         if key == 'zone':
@@ -125,10 +131,10 @@ class DaikinSkyFi(Appliance):
         )
 
         # we are using an extra mode "off" to power off the unit
-        if settings.get('mode', '') == 'off':
-            self.values['pow'] = '0'
+        if settings.get('acmode', '') == 'off':
+            self.values['opmode'] = '0'
         else:
-            self.values['pow'] = '1'
+            self.values['opmode'] = '1'
 
         query_c = 'set.cgi?p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
             **self.values
