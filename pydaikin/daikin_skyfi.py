@@ -135,13 +135,13 @@ class DaikinSkyFi(Appliance):
         else:
             self.values['opmode'] = '1'
 
-        query_c = 'set.cgi?pass={{}}p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
+        query_c = 'set.cgi?pass={{}}&p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
             **self.values
         )
 
         _LOGGER.debug("Sending query_c: %s", query_c)
-        self.parse_response(await self._get_resource(query_c))
-        _LOGGER.debug("Updated values: %s", self.values)
+        await self._get_resource(query_c)
+        # _LOGGER.debug("Updated values: %s", self.values)
 
     @property
     def zones(self):
