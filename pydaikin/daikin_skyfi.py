@@ -13,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 class DaikinSkyFi(Appliance):
     """Daikin class for SkyFi units."""
 
-    HTTP_RESOURCES = ['ac.cgi?', 'zones.cgi?']
+    HTTP_RESOURCES = ['ac.cgi?pass={}', 'zones.cgi?pass={}']
 
     INFO_RESOURCES = HTTP_RESOURCES
 
@@ -92,7 +92,7 @@ class DaikinSkyFi(Appliance):
 
     async def _run_get_resource(self, resource):
         """Make the http request."""
-        resource = "{}pass={}".format(resource, self._password)
+        resource = resource.format(self._password)
         for i in range(4):
             try:
                 return await super()._run_get_resource(resource)
@@ -116,7 +116,7 @@ class DaikinSkyFi(Appliance):
         _LOGGER.debug("Updating settings: %s", settings)
         # start with current values
         current_val = await self._get_resource('ac.cgi?')
-        _LOGGER.debug("Current sesttings: %s", current_val)
+        _LOGGER.debug("Current settings: %s", current_val)
 
         # Merge current_val with mapped settings
         self.values.update(current_val)
@@ -126,7 +126,7 @@ class DaikinSkyFi(Appliance):
                 for k, v in settings.items()
             }
         )
-        _LOGGER.debug("Self values: %s", self.values)
+        _LOGGER.debug("Updated values: %s", self.values)
 
         # we are using an extra mode "off" to power off the unit
         if settings.get('acmode', '') == 'off':
@@ -135,12 +135,13 @@ class DaikinSkyFi(Appliance):
         else:
             self.values['opmode'] = '1'
 
-        query_c = 'set.cgi?p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
+        query_c = 'set.cgi?pass={{}}p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
             **self.values
         )
 
         _LOGGER.debug("Sending query_c: %s", query_c)
         self.parse_response(await self._get_resource(query_c))
+        _LOGGER.debug("Updated values: %s", self.values)
 
     @property
     def zones(self):
