@@ -113,8 +113,10 @@ class DaikinSkyFi(Appliance):
 
     async def set(self, settings):
         """Set settings on Daikin device."""
+        _LOGGER.debug("Updating settings: %s", settings)
         # start with current values
         current_val = await self._get_resource('ac.cgi?')
+        _LOGGER.debug("Current sesttings: %s", current_val)
 
         # Merge current_val with mapped settings
         self.values.update(current_val)
@@ -124,10 +126,12 @@ class DaikinSkyFi(Appliance):
                 for k, v in settings.items()
             }
         )
+        _LOGGER.debug("Self values: %s", self.values)
 
         # we are using an extra mode "off" to power off the unit
         if settings.get('acmode', '') == 'off':
             self.values['opmode'] = '0'
+            self.values['acmode'] = current_val['acmode']
         else:
             self.values['opmode'] = '1'
 
@@ -136,7 +140,7 @@ class DaikinSkyFi(Appliance):
         )
 
         _LOGGER.debug("Sending query_c: %s", query_c)
-        await self._get_resource(query_c)
+        self.parse_response(await self._get_resource(query_c))
 
     @property
     def zones(self):
