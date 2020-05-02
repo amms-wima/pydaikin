@@ -115,7 +115,7 @@ class DaikinSkyFi(Appliance):
         """Set settings on Daikin device."""
         _LOGGER.debug("Updating settings: %s", settings)
         # start with current values
-        current_val = await self._get_resource('ac.cgi?')
+        current_val = await self._get_resource('ac.cgi?pass={}')
         _LOGGER.debug("Current settings: %s", current_val)
 
         # Merge current_val with mapped settings
@@ -129,15 +129,15 @@ class DaikinSkyFi(Appliance):
         _LOGGER.debug("Updated values: %s", self.values)
 
         # we are using an extra mode "off" to power off the unit
-        if settings.get('acmode', '') == 'off':
+        if settings.get('mode', '') == 'off':
             self.values['opmode'] = '0'
-            self.values['acmode'] = current_val['acmode']
+            query_c = 'set.cgi?pass={{}}&p=0'
         else:
-            self.values['opmode'] = '1'
-
-        query_c = 'set.cgi?pass={{}}&p={opmode}&t={settemp}&f={fanspeed}&m={acmode}&'.format(
-            **self.values
-        )
+            if 'mode' in settings:
+                self.values['opmode'] = '1'
+            query_c = 'set.cgi?pass={{}}&p={opmode}&t={settemp}&f={fanspeed}&m={acmode}'.format(
+                **self.values
+            )
 
         _LOGGER.debug("Sending query_c: %s", query_c)
         await self._get_resource(query_c)
@@ -155,7 +155,7 @@ class DaikinSkyFi(Appliance):
 
     async def set_zone(self, zone_id, status):
         """Set zone status."""
-        query = f'/setzone.cgi?z={zone_id}&s={status}&'
+        query = f'/setzone.cgi?pass={{}}&z={zone_id}&s={status}'
         _LOGGER.debug("Set zone: %s", query)
         current_state = await self._get_resource(query)
         self.values.update(current_state)
