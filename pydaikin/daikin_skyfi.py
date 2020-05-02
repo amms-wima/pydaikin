@@ -131,7 +131,7 @@ class DaikinSkyFi(Appliance):
         # we are using an extra mode "off" to power off the unit
         if settings.get('mode', '') == 'off':
             self.values['opmode'] = '0'
-            query_c = 'set.cgi?pass={{}}&p=0'
+            query_c = 'set.cgi?pass={}&p=0'
         else:
             if 'mode' in settings:
                 self.values['opmode'] = '1'
