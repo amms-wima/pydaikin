@@ -1,5 +1,6 @@
 """Pydaikin appliance, represent a Daikin device."""
 
+from asyncio import sleep
 import logging
 from urllib.parse import unquote
 
@@ -98,6 +99,7 @@ class DaikinSkyFi(Appliance):
                 return await super()._run_get_resource(resource)
             except (ClientOSError, ClientResponseError) as err:
                 _LOGGER.debug("%s #%s", repr(err), i)
+                await sleep(1)
                 if i >= 3:
                     raise
 
@@ -114,12 +116,9 @@ class DaikinSkyFi(Appliance):
     async def set(self, settings):
         """Set settings on Daikin device."""
         _LOGGER.debug("Updating settings: %s", settings)
-        # start with current values
-        current_val = await self._get_resource('ac.cgi?pass={}')
-        _LOGGER.debug("Current settings: %s", current_val)
+        await self.update_status(['ac.cgi?pass={}'])
 
         # Merge current_val with mapped settings
-        self.values.update(current_val)
         self.values.update(
             {
                 self.DAIKIN_TO_SKYFI[k]: self.human_to_daikin(k, v)
@@ -139,9 +138,7 @@ class DaikinSkyFi(Appliance):
                 **self.values
             )
 
-        _LOGGER.debug("Sending query_c: %s", query_c)
-        await self._get_resource(query_c)
-        # _LOGGER.debug("Updated values: %s", self.values)
+        await self.update_status([query_c])
 
     @property
     def zones(self):
