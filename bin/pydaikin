@@ -9,6 +9,7 @@ import time
 
 from pydaikin.daikin_brp069 import DaikinBRP069 as appliance
 import pydaikin.discovery as discovery
+from pydaikin.factory import factory
 
 
 def list_all_devices():
@@ -127,7 +128,7 @@ else:
 
     loop = asyncio.get_event_loop()
     daikin = loop.run_until_complete(
-        appliance.factory(args.device, key=args.key, password=args.password)
+        factory(args.device, key=args.key, password=args.password)
     )
 
     if settings == {}:
