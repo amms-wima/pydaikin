@@ -9,14 +9,9 @@ from urllib.parse import unquote
 from aiohttp import ClientSession, ServerDisconnectedError
 from aiohttp.web_exceptions import HTTPForbidden
 
-import pydaikin.discovery as discovery
-from pydaikin.power import (
-    ATTR_COOL,
-    ATTR_HEAT,
-    ATTR_TOTAL,
-    TIME_TODAY,
-    DaikinPowerMixin,
-)
+import pydaikin.discovery as discovery  # pylint: disable=cyclic-import
+
+from .power import ATTR_COOL, ATTR_HEAT, ATTR_TOTAL, TIME_TODAY, DaikinPowerMixin
 
 _LOGGER = logging.getLogger(__name__)
 
