@@ -100,6 +100,9 @@ class DaikinAirBase(DaikinBRP069):
         await self._update_settings(settings)
 
         self.values.setdefault('f_airside', 0)
+        # Set f_rate to indicate if f_auto is on or not.
+        if self.values['f_auto'] == '1':
+            self.values['f_rate'] = f'{self.values["f_rate"]}a'
         query_c = (
             'aircon/set_control_info'
             '?pow={pow}&mode={mode}&stemp={stemp}&shum={shum}'
