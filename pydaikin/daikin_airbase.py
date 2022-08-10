@@ -144,7 +144,7 @@ class DaikinAirBase(DaikinBRP069):
         """Return translated value from key."""
         k, val = super().represent(key)
 
-        if key in ['zone_name', 'zone_onoff']:
+        if key in ['zone_name', 'zone_onoff', 'lztemp_h', 'lztemp_c']:
             val = unquote(self.values[key]).split(';')
 
         return (k, val)
@@ -155,8 +155,10 @@ class DaikinAirBase(DaikinBRP069):
         if not self.values.get('zone_name'):
             return None
         zone_onoff = self.represent('zone_onoff')[1]
+        lztemp_h = self.represent('lztemp_h')[1]        # Zone set temps are in this field
+        lztemp_c = self.represent('lztemp_c')[1]        # Hopefully some Airbase firmware after v1.1.8 will fix this defect  
         return [
-            (name.strip(' +,'), zone_onoff[i])
+            (name.strip(' +,'), zone_onoff[i], lztemp_h[i], lztemp_c[i])
             for i, name in enumerate(self.represent('zone_name')[1])
         ]
 
